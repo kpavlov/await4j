@@ -1,0 +1,38 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# 4 space indentation for Java files
+[*.{java,xml}]
+indent_style = space
+indent_size = 4
+
+# Indentation settings for JSON, YAML, and Markdown files
+[*.{json,yml,md}]
+indent_style = space
+indent_size = 2
+
+# No trailing whitespace
+[*.{java,xml,json,yml,md}]
+trim_trailing_whitespace = true
+
+# IntelliJ IDEA code style settings
+[*.java]
+ij_java_names_count_to_use_import_on_demand = 999
+
+# Specific settings for properties files
+[*.properties]
+indent_style = space
+indent_size = 4
+
+# Specific settings for markdown files
+[*.md]
+trim_trailing_whitespace = false
+insert_final_newline = true
