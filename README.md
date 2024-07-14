@@ -1,5 +1,8 @@
 # Await4J
 
+[![Java CI with Maven](https://github.com/kpavlov/await4j/actions/workflows/maven.yml/badge.svg)](https://github.com/kpavlov/await4j/actions/workflows/maven.yml)
+[![CodeQL](https://github.com/kpavlov/await4j/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/kpavlov/await4j/actions/workflows/github-code-scanning/codeql)
+
 _Simplify Java async programming with virtual threads using an async/await style API._
 
 ## TL;DR: Features
