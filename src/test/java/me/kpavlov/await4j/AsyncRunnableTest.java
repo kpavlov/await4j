@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class AsyncRunnableTest extends AbstractAsyncTest {
+class AsyncRunnableTest extends AbstractAsyncTest {
 
     @ParameterizedTest
     @MethodSource("threadBuilders")
@@ -34,15 +34,19 @@ public class AsyncRunnableTest extends AbstractAsyncTest {
     @ParameterizedTest
     @MethodSource("awaitHandlesThrowable")
     void awaitRunnableShouldHandleException(Thread.Builder threadBuilder, Exception exception) throws InterruptedException {
-        // When & Then
         final ThrowingRunnable runnable = () -> {
             throw exception;
         };
-        threadBuilder.start(() ->
-            assertThatThrownBy(() -> Async.await(runnable))
-                .isInstanceOf(RuntimeException.class)
-                .hasCause(exception)
+        final var completed = new AtomicBoolean();
+        threadBuilder.start(() -> {
+                // When & Then
+                assertThatThrownBy(() -> Async.await(runnable))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasCause(exception);
+                completed.compareAndSet(false, true);
+            }
         ).join();
+        assertThat(completed).isTrue();
     }
 
     @Test

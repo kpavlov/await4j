@@ -15,4 +15,16 @@ class TestUtils {
         }
         return result;
     }
+
+    static void sleepMillis(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static void sleepOneSecond() {
+        sleepMillis(1000);
+    }
 }

@@ -3,11 +3,12 @@ package me.kpavlov.await4j;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ResultTest {
+class ResultTest {
 
     @Test
     void testSuccess() {
@@ -18,7 +19,7 @@ public class ResultTest {
         assertThat(result.getOrNull()).isEqualTo(42);
         assertThat(result.getOrThrow()).isEqualTo(42);
         assertThat(result.getOrDefault(100)).isEqualTo(42);
-        assertThat(result.toString()).isEqualTo("Result{42}");
+        assertThat(result).hasToString("Result{42}");
     }
 
     @Test
@@ -34,7 +35,7 @@ public class ResultTest {
             .hasMessage("Failure result")
             .hasCause(exception);
         assertThat(result.getOrDefault(100)).isEqualTo(100);
-        assertThat(result.toString()).isEqualTo("Result{throwable=" + exception + "}");
+        assertThat(result).hasToString("Result{throwable=" + exception + "}");
     }
 
     @Test
@@ -63,7 +64,7 @@ public class ResultTest {
     void testMapThrowableSuccess() {
         RuntimeException originalException = new RuntimeException("Original exception");
         Result<Integer> result = Result.failure(originalException);
-        Function<Throwable, Throwable> mapper = throwable -> new RuntimeException("Mapped exception", throwable);
+        UnaryOperator<Throwable> mapper = throwable -> new RuntimeException("Mapped exception", throwable);
 
         Result<Integer> mappedResult = result.mapThrowable(mapper);
 
@@ -76,7 +77,7 @@ public class ResultTest {
     @Test
     void testMapThrowableFailure() {
         Result<Integer> result = Result.success(42);
-        Function<Throwable, Throwable> mapper = throwable -> new RuntimeException("Mapped exception", throwable);
+        UnaryOperator<Throwable> mapper = throwable -> new RuntimeException("Mapped exception", throwable);
 
         assertThatThrownBy(() -> result.mapThrowable(mapper))
             .isInstanceOf(IllegalStateException.class)

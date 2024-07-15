@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,9 +14,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AsyncCallableTest extends AbstractAsyncTest {
 
+    static Object[][] awaitCallableToCompleteSuccessfully() {
+        return TestUtils.combine(threadBuilders(), "OK", null);
+    }
+
     @ParameterizedTest
-    @MethodSource("threadBuilders")
-    void awaitCallableToCompleteSuccessfully(Thread.Builder threadBuilder) throws InterruptedException {
+    @MethodSource("awaitCallableToCompleteSuccessfully")
+    void awaitCallableToCompleteSuccessfully(final Thread.Builder threadBuilder,
+                                             final String expectedResult) throws InterruptedException {
         final var completed = new AtomicBoolean();
         threadBuilder.start(() -> {
             final var originalThread = Thread.currentThread();
@@ -27,17 +33,18 @@ class AsyncCallableTest extends AbstractAsyncTest {
                 checkVirtualThreadInvariants(originalThread, threadLocal);
                 completed.compareAndSet(false, true);
                 // return result
-                return "Supplier Completed";
+                return expectedResult;
             });
             // then
-            assertThat(result).isEqualTo("Supplier Completed");
+            assertThat(result).isEqualTo(expectedResult);
         }).join();
         assertThat(completed).isTrue();
     }
 
+
     @ParameterizedTest
     @MethodSource("threadBuilders")
-    void awaitSupplierReThrowsRuntimeException(Thread.Builder threadBuilder) throws InterruptedException {
+    void awaitSupplierReThrowsRuntimeException(final Thread.Builder threadBuilder) throws InterruptedException {
         // given
         final var runtimeException = new RuntimeException("Failure");
         final Callable<String> callable = () -> {
@@ -60,7 +67,7 @@ class AsyncCallableTest extends AbstractAsyncTest {
             Assertions.fail("Expected to fail with exception: %s", (Object) throwable);
         } catch (Exception e) {
             assertThat(e)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(CompletionException.class)
                 .hasCause(throwable);
         }
     }

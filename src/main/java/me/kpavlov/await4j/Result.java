@@ -1,6 +1,7 @@
 package me.kpavlov.await4j;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Represents the result of an operation that can either succeed with a value or fail with a throwable.
@@ -83,7 +84,15 @@ public class Result<T> {
         return success(function.apply(value));
     }
 
-    public <R> Result<R> mapThrowable(Function<Throwable, Throwable> function) {
+    /**
+     * Maps the failure throwable using the provided function.
+     *
+     * @param <R>      the type parameter for the new Result
+     * @param function the mapping function for the throwable
+     * @return a new Result instance with the mapped throwable
+     * @throws IllegalStateException if this instance represents success
+     */
+    public <R> Result<R> mapThrowable(UnaryOperator<Throwable> function) {
         if (throwable == null) {
             throw new IllegalStateException("Can't map empty Throwable. Use map if needed.");
         }

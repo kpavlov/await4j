@@ -1,11 +1,19 @@
 package me.kpavlov.await4j;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.concurrent.*;
 
 import static me.kpavlov.await4j.Async.await;
+import static me.kpavlov.await4j.TestUtils.sleepOneSecond;
 
 @SuppressWarnings("SameParameterValue")
 class Sample {
+
+    @Test
+    void shouldRunSample() {
+        main();
+    }
 
     public static void main(String... args) {
         long startMillis = System.currentTimeMillis();
@@ -23,8 +31,7 @@ class Sample {
 
     private static <T> CompletableFuture<T> slowCompletableFuture(T result) {
         return CompletableFuture.supplyAsync(() -> {
-            System.out.println("Running slow code on thread: " + Thread.currentThread());
-            LoomUtils.assertVirtualThread();
+            System.out.println("Running slow CompletableFuture on thread: " + Thread.currentThread());
             sleepOneSecond();
             return result;
         });
@@ -41,17 +48,10 @@ class Sample {
     }
 
     private static <T> T slowCode(T result) {
-        LoomUtils.assertVirtualThread();
         System.out.println("Running slow code on thread: " + Thread.currentThread());
+        LoomUtils.assertVirtualThread();
         sleepOneSecond();
         return result;
     }
 
-    private static void sleepOneSecond() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
