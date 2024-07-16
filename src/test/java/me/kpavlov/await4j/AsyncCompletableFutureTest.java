@@ -75,13 +75,20 @@ class AsyncCompletableFutureTest extends AbstractAsyncTest {
     void shouldShortCircuitError() {
         // Given
         final var error = new Error("Expected");
-        final CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
-            throw error;
-        });
         // When & Then
         assertThatThrownBy(() ->
-            Async.await(completableFuture)
+            Async.await(CompletableFuture.failedFuture(error))
         ).isSameAs(error);
+    }
+
+    @Test
+    void shouldShortCircuitResult() {
+        // Given
+        final var result = "OK";
+        // When & Then
+        assertThat(
+            Async.await(CompletableFuture.completedFuture(result))
+        ).isSameAs(result);
     }
 }
 

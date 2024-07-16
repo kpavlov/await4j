@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +42,7 @@ class AsyncRunnableTest extends AbstractAsyncTest {
         threadBuilder.start(() -> {
                 // When & Then
                 assertThatThrownBy(() -> Async.await(runnable))
-                    .isInstanceOf(RuntimeException.class)
+                    .isInstanceOf(CompletionException.class)
                     .hasCause(exception);
                 completed.compareAndSet(false, true);
             }

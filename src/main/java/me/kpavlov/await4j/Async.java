@@ -31,8 +31,7 @@ public class Async {
      *
      * @param block  The code to be executed asynchronously
      * @param millis The maximum time to wait for the block to complete, in milliseconds
-     * @throws CompletionException   if the virtual thread is interrupted
-     * @throws RuntimeException      if the block throws an exception
+     * @throws CompletionException   if the virtual thread is interrupted or throws Exception
      * @throws Error                 if the block throws an Error
      * @throws IllegalStateException if an unexpected Throwable is encountered
      */
@@ -89,7 +88,7 @@ public class Async {
      *               that contains synchronized blocks or invokes synchronized methods to avoid scalability issues.</strong>
      * @param millis The maximum time to wait for the callable block to complete, in milliseconds
      * @return The result of the callable block
-     * @throws RuntimeException      if the virtual thread is interrupted or if the block throws an exception
+     * @throws CompletionException   if the virtual thread is interrupted or if the block throws an exception
      * @throws Error                 if the block throws an Error
      * @throws IllegalStateException if an unexpected throwable is encountered in the call result
      */
@@ -214,16 +213,24 @@ public class Async {
     }
 
     private static <T> boolean shortCircuitDoneFuture(Future<T> future) {
-        if (future.state() == Future.State.SUCCESS) {
-            return true;
-        } else if (future.state() == Future.State.FAILED) {
-            Throwable throwable = future.exceptionNow();
-            if (throwable instanceof Error e) {
-                throw e;
+        switch (future.state()) {
+            case SUCCESS -> {
+                return true;
             }
-            throw toRuntimeException(throwable);
+            case FAILED -> {
+                Throwable throwable = future.exceptionNow();
+                if (throwable instanceof Error e) {
+                    throw e;
+                }
+                throw toRuntimeException(throwable);
+            }
+            case CANCELLED ->
+                throw new CancellationException("Execution is cancelled");
+            default ->
+            {
+                return false;
+            }
         }
-        return false;
     }
 
     private static RuntimeException toRuntimeException(Throwable cause) {
