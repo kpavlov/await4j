@@ -62,29 +62,34 @@ This library introduces helpful utilities to simplify calls in Virtual Threads:
 For example, to call a lambda function, even throwing exceptions, use:
 
 ```java
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import me.kpavlov.await4j.Async.await;
+...
 
 final var completed = new AtomicBoolean();
 
-await(() -> {
-    // Do something slow in a virtual thread
-    try {
-        Thread.sleep(1000);
-    } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-    }
-    // Set flag to "true" to indicate, that the task is completed
-    completed.set(true);
-});
+final var slowCalculation = () -> {
+  // Do something slow in a virtual thread
+  try {
+    Thread.sleep(1000);
+  } catch (InterruptedException e) {
+    throw new RuntimeException(e);
+  }
+  // Set flag to "true" to indicate, that the task is completed
+  completed.set(true);
+};
+
+await(slowCalculation);
 
 // Verify that calculation has been completed
-System.out.println("Completed: "+completed.get()); // "Completed: true"
+System.out.println("Completed: " + completed.get()); // "Completed: true"
 ```
 
 To call a lambda that returns a value (Callable), use:
+
 ```java
+import me.kpavlov.await4j.Async.await;
+...
+
 final var result = await(() -> {
     // Do some expensive calculation here
     try {
@@ -133,3 +138,10 @@ System.out.println("Future Result: " + futureResult); // "Result: 42"
 **If you want to write better code on JVM, use [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html).** This library remains a simpler choice for Java projects where adopting or migrating to [Kotlin](https://kotlinlang.org) is not feasible.
 
 The library focuses on running blocking code on Virtual Threads without providing additional parallelism optimizations. If your IO operations are slow, they will not run faster. If a lambda takes one second to run, `await(...)` will also take approximately one second, but on a virtual thread.
+
+## Links
+
+- [JEP 444: Virtual Threads](https://openjdk.org/jeps/444) -- Virtual threads are lightweight threads that dramatically reduce the effort of writing, maintaining, and observing high-throughput concurrent applications.
+- [JEP 480: Structured Concurrency](https://openjdk.org/jeps/480) -- Simplify concurrent programming by introducing an API for structured concurrency. Structured concurrency treats groups of related tasks running in different threads as a single unit of work, thereby streamlining error handling and cancellation, improving reliability, and enhancing observability. This is a preview API.
+- [JEP 429: ScopedValues](https://openjdk.org/jeps/429) -- Scoped values enables sharing of immutable data within and across threads. They are preferred to thread-local variables, especially when using large numbers of virtual threads. This is an incubating API.
+- [Java Async-Await](https://github.com/AugustNagro/java-async-await) -- Async-Await support for Java CompletionStage.
