@@ -1,7 +1,10 @@
 # Await4J
 
+[![Maven Central](https://img.shields.io/maven-central/v/me.kpavlov.await4j/await4j?labelColor=2a2f35)](https://repo1.maven.org/maven2/me/kpavlov/await4j/await4j/)
+![GitHub License](https://img.shields.io/github/license/kpavlov/await4j?labelColor=2a2f35)
 [![Java CI with Maven](https://github.com/kpavlov/await4j/actions/workflows/maven.yml/badge.svg)](https://github.com/kpavlov/await4j/actions/workflows/maven.yml)
 [![CodeQL](https://github.com/kpavlov/await4j/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/kpavlov/await4j/actions/workflows/github-code-scanning/codeql)
+
 
 _Simplify Java async programming with virtual threads using an async/await style API._
 
@@ -138,6 +141,32 @@ System.out.println("Future Result: " + futureResult); // "Result: 42"
 **If you want to write better code on JVM, use [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html).** This library remains a simpler choice for Java projects where adopting or migrating to [Kotlin](https://kotlinlang.org) is not feasible.
 
 The library focuses on running blocking code on Virtual Threads without providing additional parallelism optimizations. If your IO operations are slow, they will not run faster. If a lambda takes one second to run, `await(...)` will also take approximately one second, but on a virtual thread.
+
+## How to Get Started
+
+1. Add project dependency. Latest version can be found on [maven central repository](https://mvnrepository.com/artifact/me.kpavlov.await4j/await4j):
+
+    Maven:
+    ```xml
+    <!-- https://mvnrepository.com/artifact/me.kpavlov.await4j/await4j -->
+    <dependency>
+        <groupId>me.kpavlov.await4j</groupId>
+        <artifactId>await4j</artifactId>
+        <version>[LATEST]</version>
+    </dependency>
+    ```
+
+    Gradle:
+    ```kotlin
+    // https://mvnrepository.com/artifact/me.kpavlov.await4j/await4j
+      implementation("me.kpavlov.await4j:await4j:${await4jVersion}")
+    ```
+
+2. Import methods from [Async](src/main/java/me/kpavlov/await4j/Async.java)
+
+    ```java
+    import me.kpavlov.await4j.Async.await;
+    ```
 
 ## Links
 
