@@ -114,7 +114,7 @@ public class Async {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted virtual thread", e);
+            throw new CompletionException("Interrupted virtual thread", e);
         }
     }
 
@@ -144,7 +144,6 @@ public class Async {
         if (shortCircuitDoneFuture(future)) return future.resultNow();
         return await(() -> future.get());
     }
-
 
     /**
      * Waits for the completion of a Future and returns its result.
@@ -212,34 +211,33 @@ public class Async {
         }
     }
 
+    @SuppressWarnings("java:S1181")
     private static <T> boolean shortCircuitDoneFuture(Future<T> future) {
-        switch (future.state()) {
-            case SUCCESS -> {
+        try {
+            if (future.isDone()) {
+                if (future.isCancelled()) {
+                    throw new CancellationException("Execution is cancelled");
+                }
+                future.get();
                 return true;
             }
-            case FAILED -> {
-                Throwable throwable = future.exceptionNow();
-                if (throwable instanceof Error e) {
-                    throw e;
-                }
-                throw toRuntimeException(throwable);
-            }
-            case CANCELLED ->
-                throw new CancellationException("Execution is cancelled");
-            default ->
-            {
-                return false;
-            }
+            return false;
+        } catch (Error e) {
+            throw e;
+        } catch (ExecutionException e) {
+            throw toRuntimeException(e.getCause());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new CompletionException("Interrupted while waiting for future", e);
         }
     }
 
     private static RuntimeException toRuntimeException(Throwable cause) {
-        if (cause instanceof RuntimeException re) {
-            // re-throw RuntimeException as it is
-            return re;
-        } else {
-            return new CompletionException("Can't execute async task: exception", cause);
-        }
+        return switch (cause) {
+            case RuntimeException re -> re;
+            case Error e -> throw e;
+            default -> new CompletionException("Can't execute async task: exception", cause);
+        };
     }
 
 }
