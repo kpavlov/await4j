@@ -4,7 +4,7 @@
 
     <groupId>me.kpavlov.await4j</groupId>
     <artifactId>await4j</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
 
     <name>await4j</name>
     <description>Simplify Java async programming with virtual threads using an async/await style API.</description>
@@ -32,7 +32,7 @@
         <connection>scm:git:git://github.com/kpavlov/await4j.git</connection>
         <developerConnection>scm:git:ssh://github.com/kpavlov/await4j.git</developerConnection>
         <url>https://github.com/kpavlov/await4j/tree/main</url>
-        <tag>HEAD</tag>
+        <tag>v0.1.1</tag>
     </scm>
 
     <properties>
