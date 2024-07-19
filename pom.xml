@@ -4,7 +4,7 @@
 
     <groupId>me.kpavlov.await4j</groupId>
     <artifactId>await4j</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
 
     <name>await4j</name>
     <description>Simplify Java async programming with virtual threads using an async/await style API.</description>
