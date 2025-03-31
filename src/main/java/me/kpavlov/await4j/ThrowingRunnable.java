@@ -7,7 +7,7 @@ import java.util.concurrent.CompletionException;
  */
 @FunctionalInterface
 public interface ThrowingRunnable {
-    
+
     /**
      * Executes the runnable code that may throw a checked exception.
      *
